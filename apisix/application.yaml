@@ -1,0 +1,48 @@
+---
+# Apisix Application Template (Updated)
+# Bu şablon, yeni deploy edilecek uygulamalar için Apisix Route kaynağını oluşturur.
+# Şablon, trafiği doğrudan ilgili Kubernetes Service'ine yönlendirir.
+#
+# Template parametreleri:
+# devopszon-client - Uygulama ve Route adı için kullanılır
+# devopszon - Uygulamanın bulunduğu namespace
+# 80 - Kubernetes Service portu
+# devopszon-client.devopszon.com - Erişilecek host adı (örn: devopszon.com)
+# ./devopszon-client/apisix - Erişilecek path (örn: /api/benim-uygulamam)
+# devopszon-client - Hedef Kubernetes Service'in adı
+
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: devopszon-client-route
+  namespace: devopszon
+spec:
+  http:
+  - name: devopszon-client-rule
+    match:
+      hosts:
+      - devopszon-client.devopszon.com
+      paths:
+      # DİKKAT: Path'in sonuna "/*" eklenmesi, alt yolların da yakalanmasını sağlar.
+      # Örneğin /api/app/* -> /api/app/login, /api/app/users gibi tüm istekleri karşılar.
+      - ./devopszon-client/apisix/*
+    backends:
+    # Trafik doğrudan Kubernetes Service'ine yönlendiriliyor.
+    # ApisixUpstream veya ApisixService kaynağına gerek yoktur.
+    - serviceName: devopszon-client
+      servicePort: 80
+      weight: 100
+    plugins:
+    # CORS (Cross-Origin Resource Sharing) ayarları
+    - name: cors
+      enable: true
+      config:
+        allow_origins: "*"
+        allow_methods: "GET,POST,PUT,DELETE,OPTIONS"
+        allow_headers: "*"
+    # Gelen isteğin path'ini yeniden yazarak servise doğru iletilmesini sağlar.
+    # Örneğin: devopszon.com/api/app/login -> app-servisi:80/login
+    - name: proxy-rewrite
+      enable: true
+      config:
+        regex_uri: ["^./devopszon-client/apisix/(.*)", "/$1"]

@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Reference to base manifests and other resources
+resources:
+  - ../../base
+  - ../../argocd
+  - ../../apisix
+
+patches:
+  - path: deployment-patch.yaml
