@@ -36,7 +36,7 @@ spec:
       
       containers:
         - name: devopszon-client
-          image: docker.io/cahityusuf/devopszon-client:v1.0.79
+          image: docker.io/cahityusuf/devopszon-client:v1.0.82
           command: ["/bin/sh", "-c"]
           args:
             - |
