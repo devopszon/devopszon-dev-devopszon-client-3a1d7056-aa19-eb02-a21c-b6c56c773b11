@@ -36,7 +36,7 @@ spec:
       
       containers:
         - name: devopszon-client
-          image: docker.io/cahityusuf/devopszon-client:v1.0.87
+          image: docker.io/cahityusuf/devopszon-client:v1.0.88
           command: ["/bin/sh", "-c"]
           args:
             - |
@@ -58,4 +58,5 @@ spec:
                 name: devopszon-client-config
           volumeMounts:
             - name: config-volume
-              mountPath: /etc/config   
+              mountPath: /etc/config
+             
