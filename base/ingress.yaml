@@ -18,7 +18,20 @@ spec:
               number: 80
         path: /
         pathType: Prefix
+  - host: deneme.devopszon.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: devopszon-client
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
   tls:
   - hosts:
     - console.devopszon.com
     secretName: console-devopszon-com-tls-secret
+  - hosts:
+    - deneme.devopszon.com
+    secretName: deneme-devopszon-com-tls-secret
