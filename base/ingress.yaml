@@ -18,20 +18,7 @@ spec:
               number: 80
         path: /
         pathType: Prefix
-  - host: test.devopszon.com
-    http:
-      paths:
-      - backend:
-          service:
-            name: devopszon-client
-            port:
-              number: 80
-        path: /
-        pathType: Prefix
   tls:
   - hosts:
     - console.devopszon.com
-    secretName: devopszon-client-ingress-secret
-  - hosts:
-    - test.devopszon.com
-    secretName: devopszon-client-ingress-secret
+    secretName: console-devopszon-com-tls-secret
