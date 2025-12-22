@@ -34,8 +34,7 @@ spec:
       serviceAccountName: devopszon-client
       imagePullSecrets:
       - name: devopszon-client-registry-secret
-      
-      
+
       containers:
         - name: devopszon-client
           image: docker.io/cahityusuf/devopszon-client:v1.0.99
@@ -60,6 +59,5 @@ spec:
             limits:
               memory: 1Gi
               cpu: 1
-          
-          
+
              
