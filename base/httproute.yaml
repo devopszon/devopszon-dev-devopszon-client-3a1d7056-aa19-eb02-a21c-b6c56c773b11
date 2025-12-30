@@ -1,0 +1,62 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: devopszon-client-ingress
+  namespace: devopszon
+  annotations:
+    # Cert-manager annotation - Bu HTTPRoute için otomatik certificate oluştur
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  parentRefs:
+  - name: shared-gateway-https
+    namespace: kube-system
+    sectionName: https  # HTTPS listener'ı kullan
+  hostnames:
+  - console.devopszon.com
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: devopszon-client
+      port: 80
+
+---
+# HTTP → HTTPS Redirect (Opsiyonel)
+# ⚠️ Challenge path'leri (.well-known/acme-challenge) redirect edilmemeli
+# Bu yüzden redirect sadece challenge path'i dışındaki path'ler için uygulanır
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: devopszon-client-ingress-http-redirect
+  namespace: devopszon
+spec:
+  parentRefs:
+  - name: shared-gateway-https
+    namespace: kube-system
+    sectionName: http  # HTTP listener'ı kullan (HTTP → HTTPS redirect için)
+  hostnames:
+  - console.devopszon.com
+  rules:
+  # Challenge path'leri için redirect yok (cert-manager için gerekli)
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /.well-known/acme-challenge
+    # Bu rule için redirect yok - challenge path'leri doğrudan erişilebilir olmalı
+    backendRefs:
+    - name: devopszon-client
+      port: 80
+  # Diğer tüm path'ler için HTTPS redirect
+  # ⚠️ ÖNEMLİ: RequestRedirect filter ile backendRefs birlikte kullanılamaz
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    filters:
+    - type: RequestRedirect
+      requestRedirect:
+        scheme: https
+        statusCode: 301
+        # backendRefs yok - RequestRedirect filter kullanıldığında backendRefs kullanılamaz

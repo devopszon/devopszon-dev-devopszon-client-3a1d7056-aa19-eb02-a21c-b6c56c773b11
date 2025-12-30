@@ -9,7 +9,7 @@ spec:
   project: devopszon
   source:
     repoURL: https://github.com/devopszon/devopszon-dev-devopszon-client-3a1d7056-aa19-eb02-a21c-b6c56c773b11.git
-    targetRevision: main
+    targetRevision: HEAD
     path: .
   destination:
     server: https://kubernetes.default.svc
@@ -19,4 +19,4 @@ spec:
       - CreateNamespace=true
     automated:
       prune: true
-      selfHeal: true
+      selfHeal: false
